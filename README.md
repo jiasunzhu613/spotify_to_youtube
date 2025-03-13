@@ -1,11 +1,7 @@
-# spotify_to_youtube
+# spotify-to-youtube
 
-converts spotify playlist to youtube playlist
+spotify-to-youtube is a Python3 library that clones spotify playlist to youtube playlist
 
-## TODO:
+### Features:
 
-- [x] implement check for if the
-- [ ] add error checking / failsafe for video adding to playlist
-- [ ] add unit tests (if needed)
-- [x] add .ini / user set up
-- [x] add terminal commands
+---
