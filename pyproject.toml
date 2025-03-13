@@ -7,11 +7,12 @@ name = "spotify-to-youtube"
 requires-python = ">=3.8"
 authors=[{name = "Jonathan Z"}]
 description = "clones spotify playlist to youtube playlist"
-version = "0.1.0"
-# dynamic = ["version", "readme"]
+dynamic = ["version", "readme"]
+dependencies = ["spotipy>=2.25.0",
+                "selenium>=4.29.0",
+                "PyYAML>=6.0.2"]
 
 [tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
 readme = {file = ["README.md"]}
 
 [project.scripts]
