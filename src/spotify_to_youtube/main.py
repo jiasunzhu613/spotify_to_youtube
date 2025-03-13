@@ -1,6 +1,5 @@
 from .spotify import Spotify_To_Youtube
 from .selenium_add_to_playlist import AddSongsToPlaylist
-from dotenv import load_dotenv #TODO: add everything to .env file later 
 
 import yaml
 import argparse
