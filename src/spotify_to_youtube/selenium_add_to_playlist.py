@@ -95,9 +95,13 @@ class AddSongsToPlaylist():
                 EC.presence_of_element_located((By.XPATH, f'//*[@title="{playlist}"]'))
             )
             playlist_parent = playlist_title_element.find_element(By.XPATH, './../../../..')
-
+            
             playlist_checkbox = playlist_parent.find_element(By.ID, "checkboxContainer")
-
+            
+            # Check if song is already in playlist
+            if "checked" in playlist_checkbox.find_element(By.XPATH, "div[1]").get_attribute("class"):
+                return
+            
             playlist_checkbox.click()
         except (NoSuchElementException, TimeoutException):
             # Find new playlist button

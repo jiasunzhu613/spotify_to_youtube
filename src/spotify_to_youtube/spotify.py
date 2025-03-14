@@ -12,9 +12,30 @@ client_secret="af09bef4fc094bf09b2b40490beaef38",
 """
 SCOPE = "user-library-read playlist-read-private playlist-read-collaborative"
 
-def is_song_in_playlist(playlist, name):
-    for song in playlist:
-        if name in song:
+def calculate_title_similarity(yt_title, sp_title, sp_artist):
+    replace_chars = set("-()[]{}")
+    sp_title = list(sp_title)
+    for i in range(len(sp_title)):
+        if sp_title[i] in replace_chars:
+            sp_title[i] = " "
+    sp_title = "".join(sp_title).split()
+
+    score = sp_artist in yt_title
+    for word in sp_title:
+        if word in yt_title:
+            score += 1
+    
+    # yt_title = list(sp_title)
+    # for i in range(len(yt_title)):
+    #     if yt_title[i] in replace_chars:
+    #         yt_title[i] = " "
+    # yt_title = "".join(yt_title).split()
+
+    return score/(len(sp_title) + 1)
+
+def is_song_in_playlist(ytplaylist, name, artist):
+    for ytsong in ytplaylist:
+        if calculate_title_similarity(ytsong, name, artist) > 0.75:
             return True
     return False
 
@@ -35,7 +56,7 @@ class Spotify_To_Youtube():
             for playlist in playlists["items"]:
                 playlist_name = playlist["name"]
                 playlist_id = re.search(r"https://api.spotify.com/v1/playlists/(.+?)/tracks", playlist["tracks"]["href"])
-                songs_in_playlist = driver.get_all_songs_in_playlist(f"Spotify-{playlist_name}") # TODO: might want to remove
+                # songs_in_playlist = driver.get_all_songs_in_playlist(f"Spotify-{playlist_name}") # TODO: might want to remove
 
                 res_playlist = self.sp.playlist_tracks(playlist_id=playlist_id.group(1), limit=100)
 
@@ -44,9 +65,9 @@ class Spotify_To_Youtube():
                     for item in res_playlist["items"]:
                         # Omit song if already in playlist 
                         # TODO: might want to delete
-                        if (is_song_in_playlist(songs_in_playlist, item['track']['name'])):
-                            print(f"Found {item['track']['name']}")
-                            continue
+                        # if (is_song_in_playlist(songs_in_playlist, item['track']['name'], item["track"]["artists"][0]["name"])):
+                        #     print(f"Found {item['track']['name']}")
+                        #     continue
 
                         driver.create_playlist_search_and_add_video_to_playlist(item["track"]["name"], 
                                                                                 item["track"]["artists"][0]["name"], 
@@ -73,7 +94,7 @@ class Spotify_To_Youtube():
                 if playlist_name != sp_playlist:
                     continue
 
-                songs_in_playlist = driver.get_all_songs_in_playlist(yt_playlist if yt_playlist else f"Spotify-{playlist_name}") # TODO: might want to remove
+                # songs_in_playlist = driver.get_all_songs_in_playlist(yt_playlist if yt_playlist else f"Spotify-{playlist_name}") # TODO: might want to remove
 
                 playlist_id = re.search(r"https://api.spotify.com/v1/playlists/(.+?)/tracks", playlist["tracks"]["href"])
                 res_playlist = self.sp.playlist_tracks(playlist_id=playlist_id.group(1), limit=100)
@@ -81,9 +102,9 @@ class Spotify_To_Youtube():
                 while res_playlist:
                     # Add all current tracks
                     for item in res_playlist["items"]:
-                        if (is_song_in_playlist(songs_in_playlist, item['track']['name'])):
-                            continue
-
+                        # if (is_song_in_playlist(songs_in_playlist, item['track']['name'], item["track"]["artists"][0]["name"])):
+                        #     continue
+                        
                         driver.create_playlist_search_and_add_video_to_playlist(item["track"]["name"], 
                                                                                 item["track"]["artists"][0]["name"], 
                                                                                 yt_playlist if yt_playlist else f"Spotify-{playlist_name}")
@@ -104,8 +125,12 @@ class Spotify_To_Youtube():
 
     def add_spotify_liked(self, driver):
         liked = self.sp.current_user_saved_tracks(limit=20)
+        # songs_in_playlist = driver.get_all_songs_in_playlist("Spotify-Liked") # TODO: might want to remove
+
         while liked:
             for item in liked["items"]:
+                # if (is_song_in_playlist(songs_in_playlist, item["track"]["name"], item["track"]["artists"][0]["name"])):
+                #     continue
                 driver.create_playlist_search_and_add_video_to_playlist(item["track"]["name"], 
                                                                         item["track"]["artists"][0]["name"], 
                                                                         f"Spotify-Liked")

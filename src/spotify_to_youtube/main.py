@@ -3,7 +3,7 @@ from .selenium_add_to_playlist import AddSongsToPlaylist
 
 import yaml
 import argparse
-
+ 
 def run(args):
     # Set up
     if args.setup:
