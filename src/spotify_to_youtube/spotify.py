@@ -4,12 +4,6 @@ import re
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-
-"""
-client_id="98080bdb6392481d8126180b5902e8ba", 
-client_secret="af09bef4fc094bf09b2b40490beaef38", 
-"http://localhost:8000"
-"""
 SCOPE = "user-library-read playlist-read-private playlist-read-collaborative"
 
 def calculate_title_similarity(yt_title, sp_title, sp_artist):
